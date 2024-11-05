@@ -1,4 +1,4 @@
-from src.presentation.controllers.user_finder_controller import UserFinderController
+from src.presentation.controllers.user_controller import UserFinderController
 from src.data.tests.user_finder import UserFinderSpy
 from src.presentation.http_types.http_response import HttpResponse
 

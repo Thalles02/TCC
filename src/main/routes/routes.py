@@ -4,8 +4,7 @@ from flask import Blueprint, request, jsonify
 from src.main.adapters.request_adapter import request_adapter
 
 # Import composers
-from src.main.composers.user_finder_composer import user_finder_composer
-from src.main.composers.user_register_composer import user_register_composer
+from src.main.composers.user_composer import user_finder_composer, user_register_composer
 
 # Import Validators
 from src.validators.user_validator import user_register_validator, user_finder_validator
