@@ -1,4 +1,5 @@
 # pylint: disable=too-many-arguments
+
 class HttpRequest:
 
     def __init__(
