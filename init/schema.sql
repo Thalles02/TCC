@@ -8,3 +8,18 @@ CREATE TABLE IF NOT EXISTS users (
     last_name VARCHAR(255) NOT NULL,
     email_address VARCHAR(255) NOT NULL
 );
+
+
+CREATE TABLE FlowTable (
+    token VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+
+CREATE TABLE DetailTable (
+    id BIGSERIAL PRIMARY KEY,
+    token VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
+    column_name VARCHAR(255) NOT NULL,
+    FOREIGN KEY (token) REFERENCES flowtable(token)
+);

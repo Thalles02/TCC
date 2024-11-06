@@ -1,5 +1,5 @@
 from src.infra.db.tests.users_repository import UsersRepositorySpy
-from .user import UserFinder, UserRegister
+from ..user import UserFinder, UserRegister
 
 
 # Testes para o caso de uso UseFinder

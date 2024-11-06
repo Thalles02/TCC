@@ -1,9 +1,7 @@
 # pylint: disable=redefined-builtin
 # pylint: disable=invalid-name
 
-class Tables:
-    def __init__(self, id: int, name: str, token: str, columns: list) -> None:
-        self.id = id
-        self.name = name
+class Table:
+    def __init__(self, token: str, name: str) -> None:
         self.token = token
-        self.columns = columns
+        self.name = name
