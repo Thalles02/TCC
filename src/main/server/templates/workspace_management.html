@@ -1,0 +1,90 @@
+{% extends "partials/base.html" %}
+{% set static = url_for('static', filename='') %}
+
+{% block index %}
+<div class="head-main-container flex-spacebetween">
+    <span class="text-black flow-hnsd-g ">Gerenciador de Workspaces</span>
+
+
+    <div style="height: 25px;" class="flex-center h-100">
+        <a class="btn-add-record ml-1 flex-center">
+            <span onclick="openModal('addRecordModal')" class="flow-hnsd-p">Editar Workspace</span>
+        </a>
+    </div>
+</div>
+
+<div class="main-galery-container h-100">
+    <div style="align-items: start;" class="principal-galery-content flex-start">
+        
+    </div>
+</div>
+
+<div class="modal flex-center" id="addRecordModal">
+    <form method="post" class="add-record-modal">
+        <div class="head-modal-flow flex-spacebetween">
+            <span class="flow-hnsd-p">Criar Novos Workspaces</span>
+            <span class="close" onclick="closeModal('addRecordModal')">&times;</span>
+        </div>
+
+        <div class="content-add-record-audit">
+            <span style="color: black;" class="flow-hnsd-h5 regular">Criar Novo Workspace</span>
+
+            <div class="short-text-item mt-1 flex-start flex-column">
+                <div class="title-label flex-start w-100">
+                    <i class='bx bx-text'></i>
+                    <span class="flow-hnsd-p">Nome do Workspace:</span>
+                </div>
+                <input required name="workspace" type="text" value="{{workspace.name}}">
+            </div>
+
+            <div class="short-text-item mt-1 flex-start flex-column">
+                <div class="title-label flex-start w-100">
+                    <i class='bx bx-text'></i>
+                    <span class="flow-hnsd-p">Selecione as tabelas deste Worspace: </span>
+                </div>
+                <div id="flow-unique-option-tabelas" class="flow-unique-option w-100 flex-column">
+                    <div style="height: 100%;" class="w-100 h-100 flex-spacebetween">
+                        <input name="tabelas" type="text" id="flow-search-input-tabelas"
+                            class="flow-search-input" placeholder="Selecione o setores" autocomplete="off" value="">
+                        <input type="hidden" name="tabelas_id" id="tabelas_id">
+                        <div id="select-arrow-tabelas" class="select-arrow flex-center">
+                            <i class='bx bx-chevron-down'></i>
+                        </div>
+                    </div>
+
+                    <div id="flow-options-container-tabelas" class="flow-options-container">
+                        <div class="item-option-flow item-option-flow-tabelas flex-start" data-id="teste">
+                            <input style="width: 20px;" type="checkbox" name="" id="all_select">
+                            <span class="ml-1 flow-hnsd-p">Selecionar todos</span>
+                        </div>
+                        {% for i in tabelas %}
+                            <div class="item-option-flow item-option-flow-tabelas flex-start" data-id="{{i.token}}">
+                                <input style="width: 20px;" type="checkbox" name="tabelas_{{i.token}}">
+                                <span class="ml-1 flow-hnsd-p">{{i.name}}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="bottom-modal-flow flex-end">
+            <button class="btn-create-record" type="submit"><span class="flow-hnsd-m-semi-bold">Salvar</span></button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+
+        console.log('teste')
+        multiOptionConfig('#select-arrow-tabelas', '#flow-search-input-tabelas', '#flow-options-container-tabelas', '.item-option-flow-tabelas', '#flow-unique-option-tabelas', '#tabelas_id');
+    });
+
+</script>
+{% endblock %}

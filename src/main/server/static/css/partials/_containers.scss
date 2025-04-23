@@ -1,0 +1,131 @@
+// Resoluções para os containers
+$container-xl: 1440px;
+$container-l: 1140px;
+$container-m: 960px;
+$container-s: 540px;
+
+$card-box-shadow: 0px 17px 17px rgba(44, 38, 44, 0.08), 0px 5.125px 5.125px rgba(44, 38, 44, 0.08), 0px 2.12866px 2.12866px rgba(44, 38, 44, 0.08), 0px 0.769896px 0.769896px rgba(44, 38, 44, 0.08);
+
+// Responsividade
+@mixin responsive($device) {
+    @if $device == xl {
+      // Para resoluções acima à 1440px
+      @media screen and (min-width: $container-xl) {
+        @content;
+      }
+    } @else if $device == l {
+      // Para resoluções entre 1140px e 1440px
+      @media screen and (max-width: $container-xl) and (min-width: $container-l) {
+        @content;
+      }
+    } @else if $device == m {
+      // Para resoluções entre 960px e 1440px
+      @media screen and (max-width: $container-l) and (min-width: $container-s) {
+        @content;
+      }
+    } @else if $device == s {
+      // Para resoluções abaixo de 960px
+      @media screen and (max-width: $container-m) {
+        @content;
+      }
+    } @else if $device == xs {
+      // Para resoluções abaixo de 540px
+      @media screen and (max-width: $container-s) {
+        @content;
+      }
+    }
+}
+
+.container{
+  max-width: $container-xl;
+  margin: 0 auto;
+
+  padding: 96px 24px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  overflow: hidden;
+
+
+  @include responsive(s){
+    flex-direction: column;
+
+    padding: 32px 18px;
+  }
+}
+
+
+.flex-start{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-spacebetween{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-end{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-column{
+  flex-direction: column;
+}
+
+.relative{
+  position: relative;
+}
+
+.flex-wrap{
+  flex-wrap: wrap;
+}
+
+// Width's
+.width-auto {
+  width: auto;
+}
+.w-100 {
+  width: 100%;
+}
+.w-75 {
+  width: 75%;
+}
+.w-50 {
+  width: 50%;
+}
+.w-25 {
+  width: 25%;
+}
+
+.hidden{
+  display: none;
+}
+
+.br-8-lt{
+  border-radius: 8px 0px 0px 0px;
+}
+
+.br-8-lb{
+  border-radius: 0px 0px 0px 8px;
+}
+
+.br-8-rt{
+  border-radius: 0px 8px 0px 0px;
+}
+
+.br-8-rb{
+  border-radius: 0px 0px 8px 0px;
+}

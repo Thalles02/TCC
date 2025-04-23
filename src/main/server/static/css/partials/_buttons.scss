@@ -1,0 +1,79 @@
+.btn {
+    background: var(--primary-color);
+    border-radius: 14px;
+    text-decoration: none;
+    @include typeface-2(p3, desktop);
+    color: var(--body-color);
+
+    padding: 12px 32px;
+
+
+    box-shadow: 0px 17px 17px rgba(44, 38, 44, 0.08),
+        0px 5.125px 5.125px rgba(44, 38, 44, 0.08),
+        0px 2.12866px 2.12866px rgba(44, 38, 44, 0.08),
+        0px 0.769896px 0.769896px rgba(44, 38, 44, 0.08);
+
+}
+
+.btn-add-record {
+    text-decoration: none;
+    width: 120px;
+    height: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+
+    background-color: var(--card-background-color);
+}
+
+.btn-conclusion-audit, .btn-edit-audit {
+    width: 95px;
+    height: 100%;
+    
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+
+    span {
+        color: var(--text-color);
+    }
+}
+
+.btn-conclusion-audit{
+    background-color: var(--background-green-color);
+}
+
+.btn-edit-audit{
+    background-color: var(--background-blue-color);
+}
+
+.btn-locked{
+    background-color: #CBCBCB;
+}
+
+.btn-warning-out, .btn-warning-back{
+    width: auto;
+    height: 40px;
+    padding: 0px 10px;
+    
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+
+    span {
+        color: var(--text-color);
+    }
+}
+
+.btn-warning-out{
+    background-color: #f3f3fd;
+    span{
+        color: #8a87d7;
+    }
+}
+
+.btn-warning-back{
+    background-color: #6364fd;
+    span{
+        color: #fff;
+    }
+}

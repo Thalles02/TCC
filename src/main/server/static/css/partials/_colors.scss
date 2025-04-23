@@ -1,0 +1,116 @@
+body.light{
+    /* Colors */
+    --body-color: #EEF0F4;
+    --card-color: #FFFFFF; // Sidebar, Cards...
+    --secondary-color: #474747;
+    --primary-color: #F3CE38;
+
+    // Cores dedicadas ao sistema flow-hnsd
+    --card-background-color: #DCE0D9;
+    --background-green-color: #10a84b;
+    --background-blue-color: #2561ff;
+    --background-blue-light-color: #0c96e8;
+    --background-red-color: #cd3437;
+    --background-orange-color: #ed7437;
+
+    // "Bootstrap" Colors
+    --body-light-color: #fafaf8;
+    --green-bts-light-color: #0C9B73;
+    --blue-bts-light-color: #00A2B5;
+    --text-bts-color: #fafaf8;
+
+    --green-msg-container-color: #D4EDDA;
+    --green-msg-content-color: #155724;
+    --red-msg-container-color: #F8D7DA;
+    --red-msg-content-color: #721C24;
+
+    --primary-color-light: #F6F5FF;
+    --toggle-color: #DDD;
+    --btn-color: #FFF;
+    --balloon-color: #707070;
+    --login-text-color: #1D1E20;
+    --border-section-color: #c1bcbc;
+    --green-success-color: #159957;
+    --red-error-color: #ff4444;
+
+    //Text-Colors
+    --text-color: #707070;
+    --text-white-color: #fff;
+    --text-black-color: #000000;
+    --text-menu-color: #FFFFFF;
+
+    // Cores das Tabelas
+    --primary-color-table: #fffb;
+    --background-thead: #FFF;
+    --background-nth-table: #0000000b;
+
+    // Utils Colors
+    --checked-blue-color: #1567D0;
+    --background-blue-selected-color: #E1E9FF;
+    --checked-red-color: #EB1F37;
+    --background-red-selected-color: #FDEDEF;
+    --background-red-dark: #EB1F37;
+
+    // Box shadow
+    --card-shadow: 0px 17px 17px rgba(44, 38, 44, 0.08),
+    0px 5.125px 5.125px rgba(44, 38, 44, 0.08),
+    0px 2.12866px 2.12866px rgba(44, 38, 44, 0.08),
+    0px 0.769896px 0.769896px rgba(44, 38, 44, 0.08);
+
+    --down-box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
+
+    /* Transition */
+    --tran-02: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}
+
+body.dark{
+    --body-color: #18191A;
+    --card-color: #242526;
+    --primary-color: #F3CE38;
+    --primary-color-light: #3A3B3C;
+    --border-section-color: #242526;
+    --toggle-color: #FFF;
+    --btn-color: #CCC;
+    --balloon-color: #242526;
+    --green-success-color: #159957;
+    --red-error-color: #ff4444;
+
+    // Cores das Tabelas
+    --primary-color-table: #1a1b1b;
+    --background-thead: #242526;
+    --background-nth-table: #18191A;
+
+    //Text-Colors
+    --text-color: #CCC;
+    --text-black-color: #000000;
+    --text-menu-color: #18191A;
+
+    /* Transition */
+    --tran-02: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}
+
+.bg-green{
+    background-color: var(--background-green-color);
+}
+
+.bg-blue{
+    background-color: var(--background-blue-color);
+}
+
+.bg-blue-light{
+    background-color: var(--background-blue-light-color);
+}
+
+.bg-red{
+    background-color: var(--background-red-color);
+}
+
+.bg-orange{
+    background-color: var(--background-orange-color);
+}

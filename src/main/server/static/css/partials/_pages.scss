@@ -1,0 +1,221 @@
+/* Desenvolvimento dos estilos para as páginas principais do sistema */
+
+.page-container {
+    width: calc(100% - 88px);
+    height: 100vh;
+    margin-left: 88px;
+    //padding: 16px;
+
+    @include responsive(s) {
+        margin-left: 0px;
+        width: 100%;
+        height: calc(100% - 45px);
+    }
+
+
+}
+
+.head-main-container {
+    width: 100%;
+    padding: 4px 12px;
+    height: 45px;
+    background-color: var(--card-color);
+    box-shadow: var(--down-box-shadow);
+
+    @include responsive(s) {
+        
+        margin-top: 5px;
+        background-color: transparent;
+        box-shadow: none;
+        
+    }
+
+    @media (max-width: 767px) { 
+        display: flex;
+        flex-direction: column;
+        height: 60px;
+    }
+}
+
+.main-galery-container {
+    height: calc(100% - 45px);
+    padding: 16px;
+    position: relative;
+
+
+    .principal-galery-content {
+        height: 100%;
+        padding: 8px;
+        border: 1px solid rgb(148, 148, 148, 0.5);
+        overflow: hidden;
+
+        .sup-cards-container,
+        .inf-cards-container {
+            width: 100%;
+            min-height: 50%;
+            padding: 8px;
+            // overflow: auto;
+
+
+            .audit-card {
+                min-width: 20%;
+                height: 100%;
+                background-color: var(--card-color);
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+                padding: 8px 16px;
+                border-radius: 10px;
+
+                .svg-image-audit{
+                    width: 100%;
+                    display: none;
+
+                    svg{
+                        width: 90%;
+                        height: 230px;
+                    }
+
+                    @include responsive(s){                    
+                        display: flex;
+                    }
+
+                    @media (max-width: 960px) and (max-height: 1100px) { 
+                        display: none !important; // Garante que não será sobrescrito
+                    }
+                    
+
+                    @media (min-width: 1920px)  {
+                        display: flex;
+                        svg{
+                            width: 90%;
+                            height: 130px;
+                        }
+                    }
+                }
+
+                .box-info-content{
+                    height: calc(100% - 30px);
+                }
+
+                .audit-btn-galery{
+                    width: 100%;
+                    height: 30px;
+                    cursor: pointer;
+                    border-radius: 8px;
+                    background-color: var(--background-green-color);
+                    
+
+                    a, span{
+                        width: 100%;
+                        height: 100%;
+                        text-decoration: none;
+                        color: white;
+                    }
+                }
+
+                .flow-hnsd-p{
+                    white-space: normal;
+                }
+
+
+                @include responsive(s) {
+                    min-width: 45%;
+                }
+            }
+        }
+    }
+}
+
+
+
+.messages-container{
+    position: absolute;
+    top: 25px;
+    right: 0;
+    width: 320px;
+    height: 70px;
+    z-index: 2000;
+
+    background-color: #18191A;
+    border: 1px solid #474747;
+    border-radius: 3px;
+
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+
+    .close{
+        position: absolute;
+        right: 3px;
+        top: 0;
+        color: white;
+        cursor: pointer;
+        z-index: 2000;
+    }
+
+    .icon-message-green, .icon-message-red{
+        width: 25%;
+        height: 100%;
+
+        border: 1px solid #474747;
+
+        i{
+            font-size: 30px;
+        }
+    }
+
+    .icon-message-green{
+        i{
+            color: var(--green-success-color);
+        }
+    }
+
+    .icon-message-red{
+        i{
+            color: var(--red-error-color);
+        }
+    }
+
+    .content-message{
+        padding: 8px;
+        width: calc(100% - 25%);
+        position: relative;
+
+        #message-error, #message-success{
+            margin-top: 15px;
+        }
+
+        span{
+            white-space: normal;
+        }
+    }
+}
+
+.status-auditoria{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    background-color: red;
+    color: var(--text-white-color);
+}
+
+
+.item-card-container{
+    padding: 8px;
+
+    a{
+        text-decoration: none;
+    }
+    .card-workspace{
+        width: 70px;
+        height: 70px;
+        border-radius: 8px;
+        font-size: 24px;
+        color: var(--secondary-color);
+        cursor: pointer;
+        
+        background-color: var(--card-color);
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .title-workspace{
+        margin-top: 5px;
+    }
+}

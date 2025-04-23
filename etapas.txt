@@ -1,0 +1,12 @@
+Arquivo de referência com as etapas para se criar um novo caso de uso no sistema
+
+1° Etapa -> Criar arquivo de modelo na camada Domain/Models
+2° Etapa -> Criar arquivo de casos de uso abstratos em Domain/Use_Cases
+3° Etapa -> Criar classe abstrata de repositório em Data/Interfaces
+4° Etapa -> Desenvolver propriamente dito os casos de uso em Data/Use_Cases
+5° Etapa -> Criar entidade no diretório src.infra.db.entities
+6° Etapa -> Criar os comando de integração com o banco de dados em src.infra.db.repositories
+7° Etapa -> Criar o controlador em src.presentation.controllers
+8° Etapa -> Criar o composer em src.main.composers
+9° Etapa -> Criar o validator em src.validators
+10° Etapa -> Criar as rotas da api em src.main.routes

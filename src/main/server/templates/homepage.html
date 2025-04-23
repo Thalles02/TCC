@@ -1,0 +1,65 @@
+{% extends "partials/base.html" %}
+{% set static = url_for('static', filename='') %}
+
+{% block index %}
+<div class="head-main-container flex-spacebetween">
+    <span class="text-black flow-hnsd-g ">Gerenciador de Workspaces</span>
+
+
+    <div style="height: 25px;" class="flex-center h-100">
+        <a class="btn-add-record ml-1 flex-center">
+            <span onclick="openModal('addRecordModal')" class="flow-hnsd-p">Novo Workspace</span>
+        </a>
+    </div>
+</div>
+
+
+<!--
+    <ul>
+    {% for i in workspaces %}
+        <li>{{i.name}}</li>
+    {% endfor %}
+</ul>
+-->
+
+<div class="main-galery-container h-100">
+    <div style="align-items: start;" class="principal-galery-content flex-start">
+        {% for i in workspaces %}
+            <div class="item-card-container flex-center flex-column">
+                <a href="{{ url_for('app_routes.workspace_management', id=i.id) }}"><div class="card-workspace flex-center"><i class='bx bx-table'></i></div></a> 
+                <span class="flow-hnsd-p title-workspace">{{i.name}}</span>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal flex-center" id="addRecordModal">
+    <form method="post" class="add-record-modal">
+        <div class="head-modal-flow flex-spacebetween">
+            <span class="flow-hnsd-p">Criar Novos Workspaces</span>
+            <span class="close" onclick="closeModal('addRecordModal')">&times;</span>
+        </div>
+
+        <div class="content-add-record-audit">
+            <span style="color: black;" class="flow-hnsd-h5 regular">Criar Novo Workspace</span>
+
+            <div class="short-text-item mt-1 flex-start flex-column">
+                <div class="title-label flex-start w-100">
+                    <i class='bx bx-text'></i>
+                    <span class="flow-hnsd-p">Nome do Workspace:</span>
+                </div>
+                <input required name="workspace" type="text">
+            </div>
+        </div>
+
+
+        <div class="bottom-modal-flow flex-end">
+            <button class="btn-create-record" type="submit"><span class="flow-hnsd-m-semi-bold">Salvar</span></button>
+        </div>
+    </form>
+
+</div>
+
+
+
+{% endblock %}

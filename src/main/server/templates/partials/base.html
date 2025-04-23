@@ -1,0 +1,93 @@
+{% set static = url_for('static', filename='') %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'partials/head.html' %}
+</head>
+
+<body class="light">
+
+    <nav class="sidebar-mobile w-100 flex-spacebetween">
+        <span class="logo-mobile flex-center">
+            <img src="{{ url_for('static', filename='svg/logo.svg') }}" alt="logo.svg" onload="SVGInject(this)">
+        </span>
+        <div class="list-mobile">
+            <i class='bx bx-menu'></i>
+        </div>
+    </nav>
+
+    <nav class="sidebar close">
+        <header>
+            <div class="image-text">
+                <span class="image flex-center">
+                    <img src="{{ url_for('static', filename='svg/logo.svg') }}" alt="logo.svg" onload="SVGInject(this)">
+                </span>
+
+                <div class="text ml-1 header-text">
+                    <span class="name">Sistema Flow</span>
+                    <span class="profession">Management</span>
+                </div>
+            </div>
+
+            <i class="bx bx-chevron-right toggle"></i>
+
+        </header>
+
+        <div class="menu-bar">
+            <div class="menu">
+                <ul class="menu-links">
+                    <li id="inicio" class="nav-link flex-center">
+                        <a href="{{ url_for('app_routes.homepage') }}">
+                            <div class="icon flex-center"><i class='bx bx-home-alt' ></i></div>
+                            <span class="text nav-text">Início</span>
+                        </a>
+                    </li>
+                    {% for i in workspaces %}
+                        <li id="workspace_{{i.id}}" class="nav-link flex-center">
+                            <a href="{{ url_for('app_routes.workspace_management', id=i.id) }}">
+                                <div class="icon flex-center"><i class='bx bxs-briefcase'></i></div>
+                                <span style="white-space: normal;" class="text nav-text">{{i.name}}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                    
+                </ul>
+            </div>
+
+            <div class="bottom-content">
+                <li class="nav-link flex-center">
+                    <a href="#">
+                        <div class="icon flex-center"><i class="bx bx-log-out"></i></div>
+                        <span class="text nav-text">Logout</span>
+                    </a>
+                </li>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-container">
+
+        
+
+        {% block index %}
+        {% endblock %}
+
+    </section>
+
+    <nav id="navbar_active_id" style="display: none;">{{menu_bar_active}}</nav>
+    <script src="{{ static }}js/script.js"></script>
+    <script src="{{ static }}js/utils.js"></script>
+    <script src="{{ static }}js/suspenseList.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var menu_active = $('#navbar_active_id').text().trim();
+            $(`#${menu_active}`).addClass('active-menu');
+        });
+    </script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+
+</html>
