@@ -24,7 +24,7 @@ class TableListKeys(TableManagementListKeysInterface):
 
     @classmethod
     def __validade_token(cls, token: str) -> None:
-        if len(token) != 20:
+        if len(token) != 20 and token != 'workspacetables':
             raise HttpBadRequestError(
                 'Quantidade de caracteres inválidas para o token')
 
@@ -58,7 +58,7 @@ class TableAddColumn(TableManagementAddColumnInterface):
 
     @classmethod
     def __validade_token(cls, token: str) -> None:
-        if len(token) != 20:
+        if len(token) != 20 and token != 'workspacetables':
             raise HttpBadRequestError(
                 'Quantidade de caracteres inválidas para o token')
 
@@ -99,7 +99,7 @@ class TableInsertRecord(TableManagementInsertRecordInterface):
 
     @classmethod
     def __validade_token(cls, token: str) -> None:
-        if len(token) != 20:
+        if len(token) != 20 and token != 'workspacetables':
             raise HttpBadRequestError(
                 'Quantidade de caracteres inválidas para o token')
 
@@ -140,7 +140,7 @@ class TableEditRecord(TableManagementEditRecordInterface):
 
     @classmethod
     def __validade_token(cls, token: str) -> None:
-        if len(token) != 20:
+        if len(token) != 20 and token != 'workspacetables':
             raise HttpBadRequestError(
                 'Quantidade de caracteres inválidas para o token')
 
@@ -180,7 +180,7 @@ class TableDeleteRecord(TableManagementDeleteRecordInterface):
 
     @classmethod
     def __validade_token(cls, token: str) -> None:
-        if len(token) != 20:
+        if len(token) != 20 and token != 'workspacetables':
             raise HttpBadRequestError(
                 'Quantidade de caracteres inválidas para o token')
 
@@ -204,13 +204,13 @@ class TableListRecords(TableManagementListRecordsInterface):
     def __init__(self, table_repository: TableManagementRepositoryInterface) -> None:
         self.__table_repository = table_repository
 
-    def list_records(self, token: str) -> List[dict]:
-        records = self.__search_records(token)
+    def list_records(self, token: str, filter: dict) -> List[dict]:
+        records = self.__search_records(token, filter)
         response = self.__format_response(records)
         return response
 
-    def __search_records(self, token: str) -> List[dict]:
-        records = self.__table_repository.list_records(token)
+    def __search_records(self, token: str, filter: dict) -> List[dict]:
+        records = self.__table_repository.list_records(token, filter)
         if len(records) == 0:
             raise HttpNotFoundError('Nenhum registro encontrado')
         return records

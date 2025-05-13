@@ -1,7 +1,8 @@
 
 # pylint: disable=protected-access
-from typing import List
-from sqlalchemy import text
+from typing import List, Any
+from sqlalchemy import text, bindparam, column
+import sqlalchemy
 from src.infra.db.settings.connection import DBConnectionHandler
 from src.data.interfaces.table_management_repository import TableManagementRepositoryInterface
 
@@ -96,25 +97,37 @@ class TableManagementRepository(TableManagementRepositoryInterface):
                 raise exception
 
     @classmethod
-    def list_records(cls, token: str) -> List[dict]:
-        with DBConnectionHandler() as database:
+    def list_records(cls, token: str, filters: dict[str, Any] | None = None) -> List[dict]:
+        with DBConnectionHandler() as db:
             try:
-                # Executar o SQL para inserir dados na tabela dinâmica
-                with database.get_engine().connect() as connection:
+                with db.get_engine().connect() as conn:
+                    conn = conn.execution_options(isolation_level="AUTOCOMMIT")
 
-                    connection = connection.execution_options(
-                        isolation_level="AUTOCOMMIT")
+                    where_parts, params = [], {}
+                    if filters:
+                        for idx, (col, val) in enumerate(filters.items()):
+                            key = f"p{idx}"
 
-                    sql = text("SELECT * FROM {};".format(token))
+                            if val is None:                                 # IS NULL
+                                where_parts.append(f"{col} IS NULL")
 
-                    response = connection.execute(sql)
+                            elif isinstance(val, (list, tuple)):           # IN (...)
+                                placeholders = ", ".join(f":{key}_{i}" for i in range(len(val)))
+                                where_parts.append(f"{col} IN ({placeholders})")
+                                params.update({f"{key}_{i}": v for i, v in enumerate(val)})
 
-                    records = [dict(row._mapping) for row in response]
+                            else:                                          # =
+                                where_parts.append(f"{col} = :{key}")
+                                params[key] = val
 
-                    return records
-            except Exception as exception:
-                database.session.rollback()
-                raise exception
+                    where_sql = f" WHERE {' AND '.join(where_parts)}" if where_parts else ""
+                    sql = text(f"SELECT * FROM {token}{where_sql};")
+
+                    result = conn.execute(sql, params)
+                    return [dict(row._mapping) for row in result]
+            except Exception:
+                db.session.rollback()
+                raise
 
     @classmethod
     def list_specific_record(cls, token: str, record_id: int) -> List[dict]:

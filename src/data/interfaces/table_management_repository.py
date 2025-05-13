@@ -21,7 +21,7 @@ class TableManagementRepositoryInterface(ABC):
     def delete_record(self, token: str, record_id: int) -> None: pass
 
     @abstractmethod
-    def list_records(self, token: str) -> List[dict]: pass
+    def list_records(self, token: str, filter: dict) -> List[dict]: pass
 
     @abstractmethod
     def list_specific_record(

@@ -145,8 +145,10 @@ def delete_record_table_management():
 def list_records_table_management():
     http_response = None
 
+    print(request.json)
+
     try:
-        table_management_token_validator(request)
+        print(request)
         http_response = request_adapter(
             request, table_list_records_composer())
     except Exception as exception:

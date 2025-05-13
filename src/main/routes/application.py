@@ -38,6 +38,32 @@ def workspace_management(id):
 
     tabelas = requests.get(url_api + "/table/list").json()['data']['attributes']
 
+    if request.method == "POST":
+
+        try:
+            tabelas_no_workspace = requests.post(url_api + "/table/list-records", json={"token": "workspacetables", "filter": {"workspace_id": id}})
+            tabelas_no_workspace = (tabelas_no_workspace.json())['data']['records']
+        except:
+            tabelas_no_workspace = []
+            print("Não há tabelas no workspace")
+
+        dict_checkboxes = {}
+
+        for i in tabelas:
+            dict_checkboxes[i['token']] = request.form.get(f"tabelas_{i['token']}") == "on"
+
+        print("Dict checkboxes: ", dict_checkboxes)
+        print("Tabelas no workspace: ", tabelas_no_workspace)
+
+        """for i in dict_checkboxes:
+            if dict_checkboxes[i] and i not in tabelas_no_workspace['token_table']:
+                insert_record = requests.post(url_api + "/table/insert-record", json={"token": "workspacetables", "data":{"token_table": i, "workspace_id": id}})
+            elif not dict_checkboxes[i] and i == tabelas_no_workspace['token_table']:
+
+                for k in tabelas_no_workspace:
+                    if k['token_table'] == i:
+                        delete_record = requests.post(url_api + "/table/delete-record", json={"token": "workspacetables", "record_id": k['id_workspacetables']})
+                        print(delete_record.text)"""
 
 
 

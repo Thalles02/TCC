@@ -29,10 +29,10 @@ CREATE TABLE Workspace(
     name VARCHAR(255) NOT NULL
 )
 
-CREATE TABLE WorkspaceTablesUser(
+CREATE TABLE WorkspaceTables(
     id BIGSERIAL PRIMARY KEY,
     token_table VARCHAR(255) NOT NULL,
     workspace_id BIGINT NOT NULL,
     FOREIGN KEY (token_table) REFERENCES flowtable(token),
-    FOREIGN KEY (workspace_id) REFERENCES workspace(id)
+    FOREIGN KEY (workspace_id) REFERENCES workspace(id_workspace)
 )

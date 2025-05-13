@@ -30,7 +30,7 @@ class TableManagementDeleteRecord(ABC):
 
 class TableManagementListRecords(ABC):
     @abstractmethod
-    def list_records(self, token: str) -> List[dict]: pass
+    def list_records(self, token: str, filter: dict) -> List[dict]: pass
 
 
 class TableManagementListSpecificRecord(ABC):

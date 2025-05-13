@@ -103,7 +103,11 @@ class TableListRecordsController(ControllerInterface):
 
         token = http_request.body["token"]
 
-        response = self.__use_case.list_records(token)
+        filter = http_request.body["filter"]
+
+        print(filter)
+
+        response = self.__use_case.list_records(token, filter)
 
         return HttpResponse(
             status_code=200,
