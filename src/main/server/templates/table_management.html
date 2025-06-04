@@ -1,0 +1,413 @@
+{% extends "partials/base.html" %}
+{% set static = url_for('static', filename='') %}
+
+{% block index %}
+<div class="head-main-container flex-spacebetween">
+    <span class="text-black flow-hnsd-g ">Gerenciador de Tabela – {{ token }}</span>
+
+    <div style="height: 25px;" class="flex-center h-100">
+        <a class="btn-add-record-l ml-1 flex-center">
+            <span onclick="openModal('addColumnModal')" class="flow-hnsd-p">Adicionar Nova Coluna</span>
+        </a>
+        <a class="btn-add-record-l ml-1 flex-center">
+            <span onclick="openModal('addRowModal')" class="flow-hnsd-p">Adicionar Novo Registro</span>
+        </a>
+    </div>
+</div>
+
+<div class="main-galery-container h-100">
+    <div style="align-items: start;" class="principal-galery-content flex-column">
+        <!-- DataTable dinâmico -->
+        <table id="dynamicTable" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Deletar</th>
+                    <th>Editar</th>
+                    
+                    {% for col in columns %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if records %}
+                {% for row in records %}
+                <tr>
+                     <td>
+                        <i class='bx bx-trash' style="cursor: pointer;" onclick="deleteRecord('{{ row[str_token_column] }}')"></i>
+                    </td>
+                    <td>
+                        <i class='bx bx-edit' style="cursor: pointer;" onclick="editRecord('{{ row[str_token_column]  }}')"></i>
+                    </td>
+                    {% for col in columns %}
+                    <td>{{ row[col] }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="{{ columns|length or 1 }}">Sem dados</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% set column_types = [
+'INTEGER', 'VARCHAR(255)', 'TEXT', 'BOOLEAN',
+'DATE', 'TIMESTAMP', 'DECIMAL(10,2)'
+] %}
+
+<div class="modal flex-center" id="addColumnModal">
+    <form id="addColumnForm" class="add-record-modal">
+
+        <!-- Cabeçalho -->
+        <div class="head-modal-flow flex-spacebetween">
+            <span class="flow-hnsd-p">Adicionar Nova Coluna</span>
+            <span class="close" onclick="closeModal('addColumnModal')">&times;</span>
+        </div>
+
+        <!-- Corpo -->
+        <div class="content-add-record-audit">
+
+            <!-- Nome -->
+            <div class="short-text-item mt-1 flex-start flex-column">
+                <div class="title-label flex-start w-100">
+                    <i class='bx bx-text'></i>
+                    <span class="flow-hnsd-p">Nome da Coluna:</span>
+                </div>
+                <input required name="column_name" type="text" placeholder="ex.: descricao_da_tarefa">
+            </div>
+
+            <!-- Tipo (single‑select) -->
+            <div class="short-text-item mt-1 flex-start flex-column">
+                <div class="title-label flex-start w-100">
+                    <i class='bx bx-list-ul'></i>
+                    <span class="flow-hnsd-p">Tipo:</span>
+                </div>
+
+                <div id="flow-unique-option-coltype" class="flow-unique-option w-100 flex-column">
+
+                    <!-- input visível p/ busca  -->
+                    <div class="w-100 h-100 flex-spacebetween">
+                        <input type="text" id="flow-search-input-coltype" class="flow-search-input"
+                            placeholder="Clique para escolher" autocomplete="off" readonly>
+                        <!-- valor real vai aqui -->
+                        <input type="hidden" name="column_type" id="column_type">
+                        <div id="select-arrow-coltype" class="select-arrow flex-center">
+                            <i class='bx bx-chevron-down'></i>
+                        </div>
+                    </div>
+
+                    <!-- opções -->
+                    <div id="flow-options-container-coltype" class="flow-options-container">
+                        {% for tp in column_types %}
+                        <div class="item-option-flow item-option-flow-coltype flex-start" data-id="{{ tp }}">
+                            <span class="ml-1 flow-hnsd-p">{{ tp }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rodapé -->
+        <div class="bottom-modal-flow flex-end">
+            <button class="btn-create-record" type="submit">
+                <span class="flow-hnsd-m-semi-bold">Salvar</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="modal flex-center" id="addRowModal">
+    <form id="addRowForm" class="add-record-modal">
+
+        <!-- Cabeçalho -->
+        <div class="head-modal-flow flex-spacebetween">
+            <span class="flow-hnsd-p">Adicionar Novo Registro</span>
+            <span class="close" onclick="closeModal('addRowModal')">&times;</span>
+        </div>
+
+        <div class="content-add-record-audit">
+            {% for col in columns %}
+                {% if col not in delete_columns and col != str_token_column and col != 'criado_em' %}
+                    <div class="short-text-item mt-1 flex-start flex-column">
+                        <div class="title-label flex-start w-100">
+                            <i class='bx bx-text'></i>
+                            <span class="flow-hnsd-p">{{col}}:</span>
+                        </div>
+                        <input required name="{{col}}_id" type="text">
+                    </div>
+                {% endif %}
+            {% endfor %}  
+        </div>
+
+        <!-- Rodapé -->
+        <div class="bottom-modal-flow flex-end">
+            <button class="btn-create-record" type="submit">
+                <span class="flow-hnsd-m-semi-bold">Salvar</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="modal flex-center" id="editRowModal">
+    <form id="editRowForm" class="add-record-modal">
+        <input type="hidden" name="record_id" id="edit_record_id">
+
+        <!-- Cabeçalho -->
+        <div class="head-modal-flow flex-spacebetween">
+            <span class="flow-hnsd-p">Editar Registro</span>
+            <span class="close" onclick="closeModal('editRowModal')">&times;</span>
+        </div>
+
+        <!-- Corpo -->
+        <div class="content-add-record-audit" id="editRowFields">
+            <!-- Inputs serão adicionados via JavaScript -->
+        </div>
+
+        <!-- Rodapé -->
+        <div class="bottom-modal-flow flex-end">
+            <button class="btn-create-record" type="submit">
+                <span class="flow-hnsd-m-semi-bold">Salvar Alterações</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="modal flex-center" id="confirmDeleteModal">
+    <div class="add-record-modal">
+        <!-- Cabeçalho -->
+        <div class="head-modal-flow flex-spacebetween">
+            <span class="flow-hnsd-p">Confirmar Exclusão</span>
+            <span class="close" onclick="closeModal('confirmDeleteModal')">&times;</span>
+        </div>
+
+        <div class="content-add-record-audit">
+            <p>Tem certeza que deseja excluir este registro?</p>
+            <input type="hidden" id="delete_record_id">
+        </div>
+
+        <!-- Rodapé -->
+        <div class="bottom-modal-flow flex-end">
+            <button class="btn-cancel" onclick="closeModal('confirmDeleteModal')">Cancelar</button>
+            <button class="btn-delete" onclick="confirmDelete()">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% block scripts %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script>
+    // Exibir modal de edição e preencher dados
+    function editRecord(id) {
+        const row = $(`#dynamicTable tbody tr`).filter(function () {
+            return $(this).find('td:eq(0)').find('i').attr('onclick') === `deleteRecord('${id}')`;
+        });
+
+        const fieldNames = {{ columns | tojson }};
+        const recordData = {};
+
+        row.find('td').slice(2).each(function (index) {
+            recordData[fieldNames[index]] = $(this).text().trim();
+        });
+
+        $('#editRowFields').empty();
+        for (const col of fieldNames) {
+            if (col === 'criado_em' || col === '{{ str_token_column }}' || {{ delete_columns | tojson }}.includes(col)) continue;
+
+            $('#editRowFields').append(`
+                <div class="short-text-item mt-1 flex-start flex-column">
+                    <div class="title-label flex-start w-100">
+                        <i class='bx bx-text'></i>
+                        <span class="flow-hnsd-p">${col}:</span>
+                    </div>
+                    <input name="${col}" type="text" value="${recordData[col] || ''}">
+                </div>
+            `);
+        }
+
+        $('#edit_record_id').val(id);
+        openModal('editRowModal');
+    }
+
+    // Abrir modal de confirmação
+    function deleteRecord(id) {
+        $('#delete_record_id').val(id);
+        openModal('confirmDeleteModal');
+    }
+
+    // Confirmar exclusão
+    async function confirmDelete() {
+        const id = $('#delete_record_id').val();
+
+        try {
+            const resp = await fetch('/table/delete-record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    token: '{{ token }}',
+                    record_id: id
+                })
+            });
+
+            if (!resp.ok) throw new Error('Erro ao deletar registro');
+
+            closeModal('confirmDeleteModal');
+            location.reload();
+
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#dynamicTable').DataTable({
+            responsive: true,
+            scrollX: true,
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/pt-BR.json'
+            }
+        });
+
+        /* ativa dropdown com sua função padrão (continua útil para abrir/fechar/filtrar) */
+        multiOptionConfig(
+            '#select-arrow-coltype',
+            '#flow-search-input-coltype',
+            '#flow-options-container-coltype',
+            '.item-option-flow-coltype',
+            '#flow-unique-option-coltype',
+            '#column_type'
+        );
+
+        /* — single‑select: clique em uma opção fecha lista e grava no hidden — */
+        $('.item-option-flow-coltype').on('click', function () {
+            const val = $(this).data('id');
+            $('#column_type').val(val);                // hidden
+            $('#flow-search-input-coltype').val(val);  // mostra escolha
+            $('#flow-options-container-coltype').hide(); // fecha dropdown
+        });
+
+        /* envio do formulário */
+        $('#addColumnForm').on('submit', async function (e) {
+            e.preventDefault();
+
+            const colName = $(this).find('input[name="column_name"]').val().trim();
+            const colType = $(this).find('input[name="column_type"]').val().trim();
+            if (!colName || !colType) return;
+
+            try {
+                const resp = await fetch('/table/add-column', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: '{{ token }}',
+                        column_definition: {
+                            column_name: colName,
+                            column_type: colType
+                        }
+                    })
+                });
+                if (!resp.ok) throw new Error('Erro ao adicionar coluna');
+
+                closeModal('addColumnModal');
+                location.reload();
+
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+        /* envio do formulário de novo registro */
+        $('#addRowForm').on('submit', async function (e) {
+            e.preventDefault();
+
+            const data = {};
+            const inputs = $(this).find('input');
+
+            inputs.each(function () {
+                const name = $(this).attr('name');
+                const value = $(this).val().trim();
+                if (name && value) {
+                    // Remove o sufixo "_id" para compatibilizar com o backend
+                    const cleanName = name.endsWith('_id') ? name.slice(0, -3) : name;
+                    data[cleanName] = value;
+                }
+            });
+
+            try {
+                const resp = await fetch('/table/insert-record', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: '{{ token }}',
+                        data: data
+                    })
+                });
+
+                if (!resp.ok) throw new Error('Erro ao inserir registro');
+
+                closeModal('addRowModal');
+                location.reload();
+
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+        
+        // Submissão do formulário de edição
+        $('#editRowForm').on('submit', async function (e) {
+            e.preventDefault();
+
+            const id = $('#edit_record_id').val();
+            const inputs = $(this).find('input[name]');
+            const data = {};
+
+            inputs.each(function () {
+                const name = $(this).attr('name');
+                if (name !== 'record_id') {
+                    data[name] = $(this).val().trim();
+                }
+            });
+
+            try {
+
+                console.log('Dados a enviar:', JSON.stringify({
+                    token: '{{ token }}',
+                    record_id: parseInt(id),
+                    data: data
+                })); // Debug: verifique os dados que estão sendo enviados
+                const resp = await fetch('/table/edit-record', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: '{{ token }}',
+                        record_id: parseInt(id),
+                        data: data
+                    })
+                });
+
+
+
+                if (!resp.ok) throw new Error('Erro ao editar registro');
+
+                closeModal('editRowModal');
+                location.reload();
+
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+    });
+</script>
+{% endblock %}

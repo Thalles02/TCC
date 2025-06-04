@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request, redirect, url_for
+from src.helpers.helpers import get_ordered_table_columns
 import requests
 
 app_route_bp = Blueprint("app_routes", __name__)
@@ -32,44 +33,104 @@ def homepage():
 
 @app_route_bp.route("/workspace/<int:id>", methods=["GET", "POST"])
 def workspace_management(id):
+    # ——————————————————————————————————————————————
+    # Dados fixos — precisaremos deles em GET **e** POST
+    # ——————————————————————————————————————————————
+    workspace = requests.post(
+        url_api + "/table/list-specific-record",
+        json={"token": "workspace", "record_id": id}
+    ).json()['data']['records'][0]
 
-    workspace = requests.post(url_api + "/table/list-specific-record", json={"token": "workspace", "record_id": (id)})
-    workspace = (workspace.json())['data']['records'][0]
+    tabelas = requests.get(url_api + "/table/list") \
+                      .json()['data']['attributes']          # todas as tabelas
 
-    tabelas = requests.get(url_api + "/table/list").json()['data']['attributes']
+    # ► 1. Tabelas que já pertencem ao workspace (sempre)
+    try:
+        records = requests.post(
+            url_api + "/table/list-records",
+            json={"token": "workspacetables",
+                  "filter": {"workspace_id": id}}
+        ).json()['data']['records']
+    except Exception:
+        records = []
+        print("Não há tabelas no workspace")
 
+    tokens_in_workspace = {rec['token_table'] for rec in records}
+    list_tables_in_workspace = [t for t in tabelas if t['token'] in tokens_in_workspace]
+
+    # ——————————————————————————————————————————————
+    # POST: processa o formulário
+    # ——————————————————————————————————————————————
     if request.method == "POST":
+        # 2. Estados de todos os checkboxes submetidos
+        dict_checkboxes = {
+            t['token']: (request.form.get(f"tabelas_{t['token']}") == "on")
+            for t in tabelas
+        }
 
-        try:
-            tabelas_no_workspace = requests.post(url_api + "/table/list-records", json={"token": "workspacetables", "filter": {"workspace_id": id}})
-            tabelas_no_workspace = (tabelas_no_workspace.json())['data']['records']
-        except:
-            tabelas_no_workspace = []
-            print("Não há tabelas no workspace")
+        # 3. Compara e sincroniza
+        for token, checked in dict_checkboxes.items():
+            if checked and token not in tokens_in_workspace:
+                requests.post(url_api + "/table/insert-record",
+                              json={"token": "workspacetables",
+                                    "data": {"token_table": token,
+                                             "workspace_id": id}})
 
-        dict_checkboxes = {}
+            elif not checked and token in tokens_in_workspace:
+                rec_id = next(r['id_workspacetables']
+                              for r in records if r['token_table'] == token)
+                requests.post(url_api + "/table/delete-record",
+                              json={"token": "workspacetables",
+                                    "record_id": rec_id})
 
-        for i in tabelas:
-            dict_checkboxes[i['token']] = request.form.get(f"tabelas_{i['token']}") == "on"
-
-        print("Dict checkboxes: ", dict_checkboxes)
-        print("Tabelas no workspace: ", tabelas_no_workspace)
-
-        """for i in dict_checkboxes:
-            if dict_checkboxes[i] and i not in tabelas_no_workspace['token_table']:
-                insert_record = requests.post(url_api + "/table/insert-record", json={"token": "workspacetables", "data":{"token_table": i, "workspace_id": id}})
-            elif not dict_checkboxes[i] and i == tabelas_no_workspace['token_table']:
-
-                for k in tabelas_no_workspace:
-                    if k['token_table'] == i:
-                        delete_record = requests.post(url_api + "/table/delete-record", json={"token": "workspacetables", "record_id": k['id_workspacetables']})
-                        print(delete_record.text)"""
-
-
+        # Evita re‑envio duplicado
+        return redirect(url_for("app_routes.workspace_management", id=id))
 
     return render_template(
-        'workspace_management.html', 
+        "workspace_management.html",
         menu_bar_active=f"workspace_{id}",
         workspace=workspace,
+        workspace_id=id,
         tabelas=tabelas,
+        tokens_in_workspace=tokens_in_workspace,
+        list_tables_in_workspace=list_tables_in_workspace,
+    )
+
+
+@app_route_bp.route("/tabela/<string:token>/<int:workspace>", methods=["GET"])
+def table_management(token, workspace):
+    try:
+        api_resp = requests.post(
+            url_api + "/table/list-records", # url_api precisa estar definida
+            json={"token": token, "filter":{}}
+        ).json()
+        records = api_resp["data"]["records"]
+    except Exception as e:
+        records = []
+        print("Erro na API:", e)
+
+
+    all_keys_from_records = {k for rec in records for k in rec.keys()}
+    colunas_para_ocultar_permanentemente = {"criado_por", "atualizado_em", "atualizado_por"}
+    colunas_prioritarias_pos_id = ["criado_em"] 
+
+    ordered_columns = get_ordered_table_columns(
+        all_record_keys=all_keys_from_records,
+        table_identifier=token,
+        columns_to_hide=colunas_para_ocultar_permanentemente,
+        priority_columns_after_id=colunas_prioritarias_pos_id,
+        default_fallback_column_name="ID"
+    )
+
+    print("Colunas para o template:", ordered_columns)
+
+    return render_template(
+        "table_management.html",
+        menu_bar_active=f"workspace_{workspace}",
+        workspace_id=workspace,
+        token=token,
+        columns=ordered_columns,
+        str_token_column=f"id_{token}".lower(), 
+        delete_columns=list(colunas_para_ocultar_permanentemente),
+        records=records
     )
