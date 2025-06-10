@@ -1,7 +1,7 @@
 
 # pylint: disable=protected-access
-from typing import List, Any
-from sqlalchemy import text, bindparam, column
+from typing import List, Any, Tuple
+from sqlalchemy import text, bindparam, column, inspect
 import sqlalchemy
 from src.infra.db.settings.connection import DBConnectionHandler
 from src.data.interfaces.table_management_repository import TableManagementRepositoryInterface
@@ -56,9 +56,12 @@ class TableManagementRepository(TableManagementRepositoryInterface):
     @classmethod
     def edit_record(cls, token: str, record: dict, record_id: int) -> None:
         with DBConnectionHandler() as database:
+            print("Editing record:", record, "with ID:", record_id)
             try:
                 update_parts = ', '.join(
                     [f"{key} = :{key}" for key in record.keys()])
+                
+                print(update_parts)
 
                 with database.get_engine().connect() as connection:
                     connection = connection.execution_options(
@@ -68,6 +71,8 @@ class TableManagementRepository(TableManagementRepositoryInterface):
 
                     sql = text("""UPDATE {token_str} SET {update_parts} WHERE {identificator_column} = :{identificator_column};""".format(
                         token_str=token, update_parts=update_parts, identificator_column=identificator_column))
+                    
+                    print(sql)
 
                     record[identificator_column] = record_id
 
@@ -152,17 +157,18 @@ class TableManagementRepository(TableManagementRepositoryInterface):
                 raise exception
 
     @classmethod
-    def list_keys(cls, token: str) -> List[str]:
+    def list_keys(cls, token: str) -> List[Tuple[str, str]]:
+
         with DBConnectionHandler() as database:
             try:
-                with database.get_engine().connect() as connection:
-                    sql = text("SELECT * FROM {} WHERE false;".format(token))
+                engine = database.get_engine()
+                inspector = inspect(engine)
 
-                    result = connection.execute(sql)
+                columns = inspector.get_columns(token.lower())
 
-                    column_names = result.keys()
+                # Retorna lista de tuplas: (nome_coluna, tipo_coluna)
+                return [(col['name'], str(col['type'])) for col in columns]
 
-                    return list(column_names)
             except Exception as exception:
                 database.session.rollback()
                 raise exception

@@ -23,7 +23,7 @@ def table_management_add_column_validator(request: any):
             "empty": False,
             "schema": {
                 "column_name": {"type": "string", "required": True, "empty": False},
-                "column_type": {"type": "string", "required": True, "empty": False, "allowed": ["INTEGER", "VARCHAR(255)", "VARCHAR(1000)", "VARCHAR(3000)", "BOOLEAN", "DATE", "TIMESTAMP", "DECIMAL"]}
+                "column_type": {"type": "string", "required": True, "empty": False, "allowed": ["INTEGER", "VARCHAR(255)", "VARCHAR(1000)", "VARCHAR(3000)", "BOOLEAN", "DATE", "TIMESTAMP", "DECIMAL", "TEXT"]}
             }
         },
     })

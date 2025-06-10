@@ -185,16 +185,17 @@
             <span class="close" onclick="closeModal('confirmDeleteModal')">&times;</span>
         </div>
 
-        <div class="content-add-record-audit">
+        <div class="content-add-record-audit flex-center flex-column">
             <p>Tem certeza que deseja excluir este registro?</p>
             <input type="hidden" id="delete_record_id">
+            <div class="mt-1 flex-center">
+                <button class="btn-warning-out" onclick="closeModal('confirmDeleteModal')"><span class="flow-hnsd-p">Cancelar</span></button>
+                <button class="ml-1 btn-warning-back" onclick="confirmDelete()"><span class="flow-hnsd-p">Confirmar</span></button>
+            </div>
         </div>
 
         <!-- Rodapé -->
-        <div class="bottom-modal-flow flex-end">
-            <button class="btn-cancel" onclick="closeModal('confirmDeleteModal')">Cancelar</button>
-            <button class="btn-delete" onclick="confirmDelete()">Confirmar</button>
-        </div>
+        
     </div>
 </div>
 
@@ -207,6 +208,39 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script>
+    const fieldTypes = {{ column_types | tojson }};  // tipo por campo
+
+    function buildInputs(formContainerSelector, recordData = {}) {
+        const container = $(formContainerSelector);
+        container.empty();
+
+        const columns = {{ columns | tojson }};
+        const ignore = {{ delete_columns | tojson }}.concat(['criado_em', '{{ str_token_column }}']);
+
+        for (const col of columns) {
+            if (ignore.includes(col)) continue;
+
+            const value = recordData[col] || '';
+            const type = fieldTypes[col];
+
+            let inputType = 'text';
+
+            if (type.includes('INT')) inputType = 'number';
+            else if (type === 'BOOLEAN') inputType = 'checkbox';
+            else if (type.includes('DATE') || type.includes('TIME')) inputType = 'datetime-local';
+
+            container.append(`
+                <div class="short-text-item mt-1 flex-start flex-column">
+                    <div class="title-label flex-start w-100">
+                        <i class='bx bx-text'></i>
+                        <span class="flow-hnsd-p">${col}:</span>
+                    </div>
+                    <input name="${col}" type="${inputType}" value="${value}" ${type === 'BOOLEAN' && value ? 'checked' : ''}>
+                </div>
+            `);
+        }
+    }
+
     // Exibir modal de edição e preencher dados
     function editRecord(id) {
         const row = $(`#dynamicTable tbody tr`).filter(function () {
@@ -220,27 +254,14 @@
             recordData[fieldNames[index]] = $(this).text().trim();
         });
 
-        $('#editRowFields').empty();
-        for (const col of fieldNames) {
-            if (col === 'criado_em' || col === '{{ str_token_column }}' || {{ delete_columns | tojson }}.includes(col)) continue;
-
-            $('#editRowFields').append(`
-                <div class="short-text-item mt-1 flex-start flex-column">
-                    <div class="title-label flex-start w-100">
-                        <i class='bx bx-text'></i>
-                        <span class="flow-hnsd-p">${col}:</span>
-                    </div>
-                    <input name="${col}" type="text" value="${recordData[col] || ''}">
-                </div>
-            `);
-        }
-
         $('#edit_record_id').val(id);
+        buildInputs('#editRowFields', recordData);
         openModal('editRowModal');
     }
 
     // Abrir modal de confirmação
     function deleteRecord(id) {
+        console.log('ID a ser deletado:', id); // Debug: verifique o ID
         $('#delete_record_id').val(id);
         openModal('confirmDeleteModal');
     }
@@ -255,7 +276,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     token: '{{ token }}',
-                    record_id: id
+                    record_id: parseInt(id)
                 })
             });
 
@@ -362,6 +383,11 @@
             } catch (err) {
                 alert(err.message);
             }
+        });
+
+        $('span[onclick="openModal(\'addRowModal\')"]').on('click', function () {
+            buildInputs('#addRowForm .content-add-record-audit');
+            openModal('addRowModal');
         });
 
         

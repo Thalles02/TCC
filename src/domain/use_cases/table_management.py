@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 
 class TableManagementListKeys(ABC):
     @abstractmethod
-    def list_keys(self, token: str) -> List[str]: pass
+    def list_keys(self, token: str) -> List[Tuple[str, str]]: pass
 
 
 class TableManagementAddColumn(ABC):

@@ -1,5 +1,5 @@
 # pylint: disable=broad-exception-raised
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from src.domain.use_cases.table_management import TableManagementAddColumn as TableManagementAddColumnInterface
 from src.domain.use_cases.table_management import TableManagementInsertRecord as TableManagementInsertRecordInterface
 from src.domain.use_cases.table_management import TableManagementEditRecord as TableManagementEditRecordInterface
@@ -15,7 +15,7 @@ class TableListKeys(TableManagementListKeysInterface):
     def __init__(self, table_repository: TableManagementRepositoryInterface) -> None:
         self.__table_repository = table_repository
 
-    def list_keys(self, token: str) -> List[str]:
+    def list_keys(self, token: str) -> List[Tuple[str, str]]:
         self.__validade_token(token)
 
         list_response = self.__list_keys(token)
@@ -28,20 +28,23 @@ class TableListKeys(TableManagementListKeysInterface):
             raise HttpBadRequestError(
                 'Quantidade de caracteres inválidas para o token')
 
-    def __list_keys(self, token: str) -> List[str]:
+    def __list_keys(self, token: str) -> List[Tuple[str, str]]:
         response = self.__table_repository.list_keys(token)
 
         return response
 
     @classmethod
-    def __format_response(cls, keys: List[str]) -> Dict:
+    def __format_response(cls, keys: List[Tuple[str, str]]) -> Dict:
+        attributes = [{"name": name, "type": dtype} for name, dtype in keys]
+
         response = {
             "type": "Table Keys",
-            "count": len(keys),
-            "attributes": keys
+            "count": len(attributes),
+            "attributes": attributes
         }
 
         return response
+
 
 
 class TableAddColumn(TableManagementAddColumnInterface):
@@ -64,9 +67,12 @@ class TableAddColumn(TableManagementAddColumnInterface):
 
     def __validate_column(self, token: str, column_definition: dict) -> None:
         keys = self.__table_repository.list_keys(token)
-        if column_definition['column_name'] in keys:
+        column_names = [col_name for col_name, _ in keys]
+
+        if column_definition['column_name'] in column_names:
             raise HttpBadRequestError(
                 'Essa coluna já existe nesta tabela')
+
 
     def __registry_column(self, token: str, column_definition: dict) -> None:
         self.__table_repository.add_column(token, column_definition)
@@ -105,8 +111,10 @@ class TableInsertRecord(TableManagementInsertRecordInterface):
 
     def __validate_columns(self, token: str, record: dict) -> None:
         keys = self.__table_repository.list_keys(token)
+        column_names = [col_name for col_name, _ in keys]
+
         for i in record.keys():
-            if i not in keys:
+            if i not in column_names:
                 raise HttpBadRequestError(
                     f"Não existe a coluna {i} nesta tabela")
 
@@ -146,10 +154,13 @@ class TableEditRecord(TableManagementEditRecordInterface):
 
     def __validate_columns(self, token: str, record: dict) -> None:
         keys = self.__table_repository.list_keys(token)
+        column_names = [col_name for col_name, _ in keys]
+
         for i in record.keys():
-            if i not in keys:
+            if i not in column_names:
                 raise HttpBadRequestError(
                     f"Não existe a coluna {i} nesta tabela")
+
 
     def __edit_record(self, token: str, record: dict, record_id: int) -> None:
         self.__table_repository.edit_record(token, record, record_id)

@@ -100,19 +100,33 @@ def workspace_management(id):
 @app_route_bp.route("/tabela/<string:token>/<int:workspace>", methods=["GET"])
 def table_management(token, workspace):
     try:
+        # Obtém registros
         api_resp = requests.post(
-            url_api + "/table/list-records", # url_api precisa estar definida
-            json={"token": token, "filter":{}}
+            url_api + "/table/list-records",
+            json={"token": token, "filter": {}}
         ).json()
         records = api_resp["data"]["records"]
     except Exception as e:
         records = []
-        print("Erro na API:", e)
+        print("Erro na API (records):", e)
 
+    try:
+        # Obtém atributos (metadados da tabela)
+        metadata_resp = requests.post(
+            url_api + "/table/list-keys",
+            json={"token": token}
+        ).json()
+        attributes = metadata_resp["data"]["attributes"]  # [{'name': ..., 'type': ...}, ...]
+    except Exception as e:
+        attributes = []
+        print("Erro na API (metadados):", e)
 
-    all_keys_from_records = {k for rec in records for k in rec.keys()}
+    # Extrair colunas dos dados (nome + tipo)
+    all_keys_from_records = {attr['name'] for attr in attributes}
+    attribute_types = {attr['name']: attr['type'] for attr in attributes}
+
     colunas_para_ocultar_permanentemente = {"criado_por", "atualizado_em", "atualizado_por"}
-    colunas_prioritarias_pos_id = ["criado_em"] 
+    colunas_prioritarias_pos_id = ["criado_em"]
 
     ordered_columns = get_ordered_table_columns(
         all_record_keys=all_keys_from_records,
@@ -122,15 +136,14 @@ def table_management(token, workspace):
         default_fallback_column_name="ID"
     )
 
-    print("Colunas para o template:", ordered_columns)
-
     return render_template(
         "table_management.html",
         menu_bar_active=f"workspace_{workspace}",
         workspace_id=workspace,
         token=token,
         columns=ordered_columns,
-        str_token_column=f"id_{token}".lower(), 
+        column_types=attribute_types,  # envia os tipos
+        str_token_column=f"id_{token}".lower(),
         delete_columns=list(colunas_para_ocultar_permanentemente),
         records=records
     )

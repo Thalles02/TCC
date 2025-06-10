@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple
 
 
 class TableManagementRepositoryInterface(ABC):
 
     @abstractmethod
-    def list_keys(self, token: str) -> List[str]: pass
+    def list_keys(self, token: str) -> List[Tuple[str, str]]: pass
 
     @abstractmethod
     def add_column(self, token: str, column_definition: dict) -> None: pass
