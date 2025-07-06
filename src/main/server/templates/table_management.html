@@ -3,7 +3,7 @@
 
 {% block index %}
 <div class="head-main-container flex-spacebetween">
-    <span class="text-black flow-hnsd-g ">Gerenciador de Tabela – {{ token }}</span>
+    <span class="text-black flow-hnsd-g ">Gerenciador de Tabela – {{ table_name }}</span>
 
     <div style="height: 25px;" class="flex-center h-100">
         <a class="btn-add-record-l ml-1 flex-center">
@@ -46,7 +46,11 @@
                 {% endfor %}
                 {% else %}
                 <tr>
-                    <td colspan="{{ columns|length or 1 }}">Sem dados</td>
+                    <td colspan="{{ columns|length or 1 }}">Tabela sem Registos</td>
+                    <td colspan="{{ columns|length or 1 }}"></td>
+                    {% for col in columns %}
+                        <td></td>
+                    {% endfor %}
                 </tr>
                 {% endif %}
             </tbody>
@@ -171,7 +175,7 @@
         <!-- Rodapé -->
         <div class="bottom-modal-flow flex-end">
             <button class="btn-create-record" type="submit">
-                <span class="flow-hnsd-m-semi-bold">Salvar Alterações</span>
+                <span class="flow-hnsd-m-semi-bold">Salvar</span>
             </button>
         </div>
     </form>

@@ -8,7 +8,12 @@ url_api = "http://127.0.0.1:5000"
 
 @app_route_bp.context_processor
 def inject_global_variables():
-    workspaces = (requests.get(url_api + "/workspace/list")).json()['data']['attributes']
+    try:
+        workspaces = (requests.get(url_api + "/workspace/list")).json()['data']['attributes']
+    except Exception as e:
+        workspaces = []
+        print("Erro ao obter workspaces:", e)
+
     return dict(
         workspaces=workspaces,
     )
@@ -41,8 +46,11 @@ def workspace_management(id):
         json={"token": "workspace", "record_id": id}
     ).json()['data']['records'][0]
 
-    tabelas = requests.get(url_api + "/table/list") \
-                      .json()['data']['attributes']          # todas as tabelas
+    try:
+        tabelas = requests.get(url_api + "/table/list").json()['data']['attributes']
+    except Exception as e:
+        tabelas = []
+        print("Erro ao obter tabelas:", e)
 
     # ► 1. Tabelas que já pertencem ao workspace (sempre)
     try:
@@ -121,11 +129,22 @@ def table_management(token, workspace):
         attributes = []
         print("Erro na API (metadados):", e)
 
+    try:
+        # Obtém nome da tabela a partir do token
+        table_list_resp = requests.get(url_api + "/table/list").json()
+        table_name = next(
+            (tbl["name"] for tbl in table_list_resp["data"]["attributes"] if tbl["token"] == token),
+            "Tabela Desconhecida"
+        )
+    except Exception as e:
+        table_name = "Tabela Desconhecida"
+        print("Erro ao obter nome da tabela:", e)
+
     # Extrair colunas dos dados (nome + tipo)
     all_keys_from_records = {attr['name'] for attr in attributes}
     attribute_types = {attr['name']: attr['type'] for attr in attributes}
 
-    colunas_para_ocultar_permanentemente = {"criado_por", "atualizado_em", "atualizado_por"}
+    colunas_para_ocultar_permanentemente = {"criado_por", "atualizado_em", "atualizado_por", f"id_{token.lower()}"}
     colunas_prioritarias_pos_id = ["criado_em"]
 
     ordered_columns = get_ordered_table_columns(
@@ -141,8 +160,9 @@ def table_management(token, workspace):
         menu_bar_active=f"workspace_{workspace}",
         workspace_id=workspace,
         token=token,
+        table_name=table_name,  # Enviado ao template
         columns=ordered_columns,
-        column_types=attribute_types,  # envia os tipos
+        column_types=attribute_types,
         str_token_column=f"id_{token}".lower(),
         delete_columns=list(colunas_para_ocultar_permanentemente),
         records=records

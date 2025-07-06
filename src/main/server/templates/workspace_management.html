@@ -23,7 +23,6 @@
             <thead>
                 <tr>
                     <th>Nome da Tabela</th>
-                    <th>Token</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,7 +31,6 @@
                     <td><a style="text-decoration: none; color: black;"
                             href="{{ url_for('app_routes.table_management', token=t.token, workspace=workspace_id) }}">{{
                             t.name }}</a></td>
-                    <td>{{ t.token }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -84,12 +82,12 @@
 <div class="modal flex-center" id="addRecordModal">
     <form method="post" class="add-record-modal">
         <div class="head-modal-flow flex-spacebetween">
-            <span class="flow-hnsd-p">Criar Novos Workspaces</span>
+            <span class="flow-hnsd-p">Editar Workspace</span>
             <span class="close" onclick="closeModal('addRecordModal')">&times;</span>
         </div>
 
         <div class="content-add-record-audit">
-            <span style="color: black;" class="flow-hnsd-h5 regular">Criar Novo Workspace</span>
+            <span style="color: black;" class="flow-hnsd-h5 regular">Editar Workspace</span>
 
             <div class="short-text-item mt-1 flex-start flex-column">
                 <div class="title-label flex-start w-100">
